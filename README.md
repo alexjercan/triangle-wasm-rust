@@ -6,6 +6,12 @@ to display a triangle from scratch in WebAssembly.
 
 ## Quickstart
 
+First you will need to add WASM as a target.
+
+```console
+rustup target add wasm32-unknown-unknown
+```
+
 Build the wasm module and start a http server locally.
 
 ```console
