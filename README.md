@@ -9,7 +9,7 @@ to display a triangle from scratch in WebAssembly.
 Build the wasm module and start a http server locally.
 
 ```console
-cargo build --release
+cargo build --release --target wasm32-unknown-unknown
 python3 -m http.server
 ```
 
