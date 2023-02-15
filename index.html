@@ -95,8 +95,22 @@
         console.log("Wasm instance created.");
         // assign the memory to be usable by the other functions
         wasm_memory = results.instance.exports.memory;
-        // start the wasm
-        results.instance.exports.start();
+
+           let prev = null;
+        function first(timestamp) {
+            prev = timestamp;
+            results.instance.exports.start();
+            window.requestAnimationFrame(loop);
+        }
+             function loop(timestamp) {
+        const dt = (timestamp - prev) * 0.001;
+        prev = timestamp;
+
+        results.instance.exports.update(dt);
+        results.instance.exports.draw();
+        window.requestAnimationFrame(loop);
+    }
+          window.requestAnimationFrame(first);
       });
     </script>
   </body>

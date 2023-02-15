@@ -83,18 +83,24 @@ mod js {
     }
 }
 
+static mut VERTEX_DATA: [f32; 9] = [-0.2, 0.5, 0.0, -0.5, -0.4, 0.0, 0.5, -0.1, 0.0];
+
 #[no_mangle]
 pub extern "C" fn start() {
     unsafe {
         js::setupCanvas();
+    }
+}
 
-        let vertex_data = [-0.2_f32, 0.5, 0.0, -0.5, -0.4, 0.0, 0.5, -0.1, 0.0];
+#[no_mangle]
+pub extern "C" fn draw() {
+    unsafe {
         let vertex_buffer = js::createBuffer();
         js::bindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
         js::bufferDataF32(
             GL_ARRAY_BUFFER,
-            vertex_data.as_ptr(),
-            vertex_data.len(),
+            VERTEX_DATA.as_ptr(),
+            VERTEX_DATA.len(),
             GL_STATIC_DRAW,
         );
 
@@ -149,5 +155,38 @@ pub extern "C" fn start() {
         js::clearColor(0.37, 0.31, 0.86, 1.0);
         js::clear(GL_COLOR_BUFFER_BIT);
         js::drawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, 0);
+    }
+}
+
+pub fn find_center(verts: &[f32]) -> (f32, f32) {
+    let mut sum_x = 0.0;
+    let mut sum_y = 0.0;
+    let count = verts.len() / 3; // assume that verts contains only x, y, z values
+
+    for i in 0..count {
+        sum_x += verts[i * 3];
+        sum_y += verts[i * 3 + 1];
+    }
+
+    (sum_x / count as f32, sum_y / count as f32)
+}
+
+#[no_mangle]
+pub extern "C" fn update(delta_time: f32) {
+    let angle = delta_time * 10.0_f32;
+
+    let cos_angle = f32::cos(angle);
+    let sin_angle = f32::sin(angle);
+
+
+    unsafe {
+        let (center_x, center_y) = find_center(&VERTEX_DATA);
+
+        for i in [0, 3, 6] {
+            let x = VERTEX_DATA[i] - center_x;
+            let y = VERTEX_DATA[i+1] - center_y;
+            VERTEX_DATA[i] = x * cos_angle - y * sin_angle + center_x;
+            VERTEX_DATA[i+1] =  x * sin_angle + y * cos_angle + center_y;
+        }
     }
 }
