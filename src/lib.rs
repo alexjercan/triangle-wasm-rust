@@ -178,15 +178,14 @@ pub extern "C" fn update(delta_time: f32) {
     let cos_angle = f32::cos(angle);
     let sin_angle = f32::sin(angle);
 
-
     unsafe {
         let (center_x, center_y) = find_center(&VERTEX_DATA);
 
         for i in [0, 3, 6] {
             let x = VERTEX_DATA[i] - center_x;
-            let y = VERTEX_DATA[i+1] - center_y;
+            let y = VERTEX_DATA[i + 1] - center_y;
             VERTEX_DATA[i] = x * cos_angle - y * sin_angle + center_x;
-            VERTEX_DATA[i+1] =  x * sin_angle + y * cos_angle + center_y;
+            VERTEX_DATA[i + 1] = x * sin_angle + y * cos_angle + center_y;
         }
     }
 }
